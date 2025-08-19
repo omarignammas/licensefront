@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService, JwtResponse } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-signup',
   standalone: true,
   imports: [
     CommonModule,
@@ -25,11 +25,13 @@ import { MessageService } from 'primeng/api';
     ToastModule,        // ← AJOUTÉ pour p-toast
     RouterModule
   ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  templateUrl: './signup.component.html',
+  styleUrl: './signup.component.css',
   providers: [MessageService]
 })
-export class LoginComponent {
+export class SignupComponent {
+  username = '';
+  fullname = '';
   email = '';
   password = '';
   errorMessage = '';
@@ -41,33 +43,41 @@ export class LoginComponent {
     private messageService: MessageService
   ) {}
 
-  onLogin() {
-    this.authService.signin({ email: this.email, password: this.password }).subscribe({
-      next: (res: JwtResponse) => {
-        console.log('Login success ✅', res);
-        localStorage.setItem('token', res.token);
-
+  onSignup() {
+    this.authService.signup({
+      username: this.username,
+      fullname: this.fullname,
+      email: this.email,
+      password: this.password
+    }).subscribe({
+      next: (res: any) => {
+        console.log('Signup success ✅', res);
+  
         this.messageService.add({
           severity: 'success',
-          summary: 'Login Successful',
-          detail: 'Welcome back!'
+          summary: 'Signup Successful',
+          detail: res || 'Your account has been created successfully!'
         });
-        
+  
+        // après inscription, tu peux rediriger vers login
         setTimeout(() => {
-          this.router.navigate(['/dashboard']);
-        }, 1500); // attendre 1.5 sec
-        
+          this.router.navigate(['login']);
+        }, 1500);
       },
       error: (err) => {
-        console.error('Login failed ❌', err);
-        // this.errorMessage = 'Invalid email or password';
-
+        console.error('Signup failed ❌', err);
+  
+        let errorMsg = 'Something went wrong, please try again.';
+        if (err.error && err.error.message) {
+          errorMsg = err.error.message; // si ton backend renvoie AlreadyExistsException
+        }
+  
         this.messageService.add({
           severity: 'error',
-          summary: 'Login Failed',
-          detail: 'Invalid email or password'
+          summary: 'Signup Failed',
+          detail: errorMsg
         });
       }
     });
-  }
+  }  
 }
