@@ -1,13 +1,24 @@
-@use '../../assets/layout/variables/common';
-@use '../../assets/layout/variables/_light';
-@use '../../assets/layout/variables/_dark';
-@use '../../assets/layout/mixins';
-@use '../../assets/layout/_preloading';
-@use '../../assets/layout/_core';
-@use '../../assets/layout/_main';
-@use '../../assets/layout/_topbar';
-@use '../../assets/layout/_menu';
-@use '../../assets/layout/_footer';
-@use '../../assets/layout/_responsive';
-@use '../../assets/layout/_utils';
-@use '../../assets/layout/_typography';
+html {
+    height: 100%;
+    font-size: 14px;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    color: var(--text-color);
+    background-color: var(--surface-ground);
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.2;
+}
+
+a {
+    text-decoration: none;
+}
+
+.layout-wrapper {
+    min-height: 100vh;
+}
