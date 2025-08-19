@@ -9,7 +9,7 @@ import { AppMenuitem } from '../menuitem/menuitem.component';
     standalone: true,
     imports: [CommonModule, AppMenuitem, RouterModule],
     templateUrl: './menu.component.html',
-    styleUrls: ['./menu.component.css']
+    styleUrls: ['./menu.component.scss']
 })
 export class AppMenu {
     model: MenuItem[] = [];

@@ -11,7 +11,7 @@ import { LayoutService } from '../../service/layout.service';
   selector: 'app-topbar',
   imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator],
   templateUrl: './topbar.component.html',
-  styleUrl: './topbar.component.css'
+  styleUrl: './topbar.component.scss'
 })
 export class AppTopbar {
   items!: MenuItem[];

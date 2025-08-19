@@ -12,7 +12,7 @@ import { AppTopbar } from './topbar/topbar.component';
   selector: 'app-layout',
   imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppFooter],
   templateUrl: './layout.component.html',
-  styleUrl: './layout.component.css'
+  styleUrl: './layout.component.scss'
 })
 export class LayoutComponent {
   overlayMenuOpenSubscription: Subscription;

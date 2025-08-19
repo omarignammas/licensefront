@@ -6,7 +6,7 @@ import { AppMenu } from '../menu/menu.component';
     standalone: true,
     imports: [AppMenu],
     templateUrl: './sidebar.component.html',
-    styleUrls: ['./sidebar.component.css']
+    styleUrls: ['./sidebar.component.scss']
 })
 export class AppSidebar {
     constructor(public el: ElementRef) {}
