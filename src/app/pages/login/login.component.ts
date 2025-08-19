@@ -1,29 +1,31 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService, JwtResponse } from '../../services/auth.service';
+import { AuthService, JwtResponse } from '../../service/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast'; // ← AJOUTÉ
+import { ToastModule } from 'primeng/toast'; 
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
+import { AppFloatingconfigurator } from '../../layout/floatingconfigurator/floatingconfigurator.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,        // ← AJOUTÉ pour ngModel
-    ButtonModule,       // ← AJOUTÉ pour p-button
-    CheckboxModule,     // ← AJOUTÉ pour p-checkbox
-    InputTextModule,    // ← AJOUTÉ pour pInputText
-    PasswordModule,     // ← AJOUTÉ pour p-password
-    RippleModule,       // ← AJOUTÉ pour pRipple
-    ToastModule,        // ← AJOUTÉ pour p-toast
-    RouterModule
+    FormsModule,       
+    ButtonModule,      
+    CheckboxModule,     
+    InputTextModule,    
+    PasswordModule,    
+    RippleModule,       
+    ToastModule,       
+    RouterModule,
+    AppFloatingconfigurator,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -55,7 +57,7 @@ export class LoginComponent {
         
         setTimeout(() => {
           this.router.navigate(['/dashboard']);
-        }, 1500); // attendre 1.5 sec
+        }, 1500); 
         
       },
       error: (err) => {
