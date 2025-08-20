@@ -25,15 +25,18 @@ export class AuthService {
   }
 
   signup(signupRequest: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/signup`, signupRequest , {
-       responseType: 'text'
-    });
+    return this.http.post(`${this.apiUrl}/signup`, signupRequest);
   }
 
-  // postData(path: String, formData: FormData): Observable<any> {
+  
+  
+}
+
+
+
+
+// postData(path: String, formData: FormData): Observable<any> {
   //   return this.http.post('http://localhost:8888/api/' + path, formData, {
   //       responseType: 'text'
   //   });
   // }
-  
-}

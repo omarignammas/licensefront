@@ -58,10 +58,9 @@ export class SignupComponent {
         this.messageService.add({
           severity: 'success',
           summary: 'Signup Successful',
-          detail: res || 'Your account has been created successfully!'
+          detail: res.message || 'Your account has been created successfully!'
         });
   
-        // après inscription, tu peux rediriger vers login
         setTimeout(() => {
           this.router.navigate(['login']);
         }, 1500);
@@ -71,7 +70,7 @@ export class SignupComponent {
   
         let errorMsg = 'Something went wrong, please try again.';
         if (err.error && err.error.message) {
-          errorMsg = err.error.message; // si ton backend renvoie AlreadyExistsException
+          errorMsg = err.error.message;
         }
   
         this.messageService.add({
@@ -81,5 +80,6 @@ export class SignupComponent {
         });
       }
     });
-  }  
+  }
+  
 }
