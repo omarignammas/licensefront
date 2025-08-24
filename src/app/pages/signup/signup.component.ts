@@ -53,7 +53,7 @@ export class SignupComponent {
       password: this.password
     }).subscribe({
       next: (res: any) => {
-        console.log('Signup success ✅', res);
+        // console.log('Signup success ✅', res);
   
         this.messageService.add({
           severity: 'success',
@@ -66,7 +66,7 @@ export class SignupComponent {
         }, 1500);
       },
       error: (err) => {
-        console.error('Signup failed ❌', err);
+        // console.error('Signup failed ❌', err);
   
         let errorMsg = 'Something went wrong, please try again.';
         if (err.error && err.error.message) {

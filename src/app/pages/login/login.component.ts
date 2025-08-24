@@ -45,25 +45,23 @@ export class LoginComponent {
 
   onLogin() {
     this.authService.signin({ email: this.email, password: this.password }).subscribe({
-      next: (res: JwtResponse) => {
-        console.log('Login success ✅', res);
-        localStorage.setItem('token', res.token);
-
+      next: (res: any) => {  // the complette object response
+        const user = res.data; // user = { email, fullname, token }
+  
+        this.authService.setCurrentUser(user);
+        localStorage.setItem('token', user.token);
+  
         this.messageService.add({
           severity: 'success',
           summary: 'Login Successful',
-          detail: 'Welcome back!'
+          detail: res.message
         });
-        
+  
         setTimeout(() => {
           this.router.navigate(['/dashboard']);
         }, 1500); 
-        
       },
       error: (err) => {
-        console.error('Login failed ❌', err);
-        // this.errorMessage = 'Invalid email or password';
-
         this.messageService.add({
           severity: 'error',
           summary: 'Login Failed',
@@ -72,4 +70,5 @@ export class LoginComponent {
       }
     });
   }
+  
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface SigninRequest {
   email: string;
@@ -10,6 +10,7 @@ export interface SigninRequest {
 export interface JwtResponse {
   token: string;
   email: string;
+  fullname: string;
 }
 
 
@@ -88,14 +89,13 @@ export class InstanceService {
 
 
 
-
-
-
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth'; 
+
+
 
   constructor(private http: HttpClient) {}
 
@@ -107,8 +107,21 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/signup`, signupRequest);
   }
 
-  
-  
+ 
+
+
+  private currentUserSubject = new BehaviorSubject<JwtResponse | null>(null);
+  public currentUser$: Observable<JwtResponse | null> = this.currentUserSubject.asObservable();
+
+
+  setCurrentUser(user: JwtResponse) {
+    this.currentUserSubject.next(user);
+  }
+
+  getCurrentUser(): Observable<JwtResponse | null> {
+    return this.currentUser$;
+  }
+
 }
 
 

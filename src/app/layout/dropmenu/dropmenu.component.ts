@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { AuthService } from '../../service/api.service';
 
 
 @Component({
@@ -12,11 +13,14 @@ import { SplitButtonModule } from 'primeng/splitbutton';
   styleUrl: './dropmenu.component.scss',
   providers: [MessageService]
 })
-export class DropmenuComponent {
+export class DropmenuComponent implements OnInit {
   items: MenuItem[];
-  fullName: string = "Omar Ignammas"; // تجي من auth service مثلا
+  fullName: string = ""; // ghadi njibha mn auth service
 
-  constructor(private messageService: MessageService) {
+  constructor(
+    private messageService: MessageService,
+    private authService: AuthService
+  ) {
     this.items = [
       { label: 'Account', url: '/account' },
       { label: 'Notifications', url: '/notifications' },
@@ -28,13 +32,17 @@ export class DropmenuComponent {
     ];
   }
 
-  logout() {
-
-    localStorage.removeItem("token");
-    sessionStorage.clear();
-
-    window.location.href = "/login";
+  ngOnInit() {
+    this.authService.getCurrentUser().subscribe(user => {
+      if(user) {
+        this.fullName = user.fullname; // ola user.fullName ila kayn f backend
+      }
+    });
   }
 
-
+  logout() {
+    localStorage.removeItem("token");
+    sessionStorage.clear();
+    window.location.href = "/login";
+  }
 }
