@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService, JwtResponse } from '../../service/auth.service';
+import { AuthService, JwtResponse } from '../../service/api.service';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -35,7 +35,7 @@ export class LoginComponent {
   email = '';
   password = '';
   errorMessage = '';
-  checked = false; // ← AJOUTÉ pour p-checkbox
+  checked = false; 
 
   constructor(
     private authService: AuthService,
@@ -67,7 +67,7 @@ export class LoginComponent {
         this.messageService.add({
           severity: 'error',
           summary: 'Login Failed',
-          detail: 'Invalid email or password'
+          detail: err.error.message || 'Invalid email or password'
         });
       }
     });

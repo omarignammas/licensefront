@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../service/auth.service';
+import { AuthService } from '../../service/api.service';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -48,7 +48,7 @@ export class SignupComponent {
   onSignup() {
     this.authService.signup({
       username: this.username,
-      fullname: this.fullname,
+      fullName: this.fullname,
       email: this.email,
       password: this.password
     }).subscribe({

@@ -1,0 +1,177 @@
+<p-toast></p-toast>
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+      <p-button
+        label="New"
+        icon="pi pi-plus"
+        severity="secondary"
+        class="mr-2"
+        (onClick)="openNew()" />
+      <p-button
+        severity="secondary"
+        label="Delete"
+        icon="pi pi-trash"
+        outlined
+        (onClick)="deleteSelectedInstances()"
+        [disabled]="!selectedInstances || !selectedInstances.length" />
+    </ng-template>
+  
+    <ng-template #end>
+      <p-button
+        label="Export"
+        icon="pi pi-upload"
+        severity="secondary"
+        (onClick)="exportCSV()" />
+    </ng-template>
+  </p-toolbar>
+  
+  <p-table
+    #dt
+    [value]="instances()"
+    [rows]="10"
+    [columns]="cols"
+    [paginator]="true"
+    [globalFilterFields]="['tag','branchName','application.name','client.name','environment.name','status']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedInstances"
+    [rowHover]="true"
+    dataKey="tag"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} instances"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]"
+  >
+    <ng-template #caption>
+      <div class="flex items-center justify-between">
+        <h5 class="m-0">Manage Instances</h5>
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="onGlobalFilter(dt, $event)"
+            placeholder="Search..." />
+        </p-iconfield>
+      </div>
+    </ng-template>
+  
+    <ng-template #header>
+      <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox />
+        </th>
+        <th>Tag</th>
+        <th>Branch Name</th>
+        <th pSortableColumn="dateInstallation">
+            Date Installation
+            <p-sortIcon field="dateInstallation" />
+        </th>
+        <th>Application</th>
+        <th>Client</th>
+        <th>Environment</th>
+        <th pSortableColumn="status">
+            Status
+            <p-sortIcon field="status" />
+        </th>
+        <th>Operations</th>
+      </tr>
+    </ng-template>
+  
+    <ng-template #body let-instance>
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="instance" />
+        </td>
+        <td>{{ instance.tag }}</td>
+        <td>{{ instance.branchName }}</td>
+        <td>{{ instance.dateInstallation }}</td>
+        <td>{{ instance.application?.name }}</td>
+        <td><p-tag [value]="instance.client.name" [severity]="getSeverity(instance.client.name)" /></td>
+        <td>{{ instance.environment?.name }}</td>
+        <td>
+          <p-tag [value]="instance.status" [severity]="getSeverity(instance.status)" />
+        </td>
+        <td>
+          <p-button
+            icon="pi pi-pencil"
+            class="mr-2"
+            [rounded]="true"
+            [outlined]="true"
+            (click)="editInstance(instance)" />
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [rounded]="true"
+            [outlined]="true"
+            (click)="deleteInstance(instance)" />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  
+ 
+  <p-dialog [(visible)]="instanceDialog" [style]="{ width: '450px' }" header="Instance Details" [modal]="true">
+    <ng-template #content>
+      <div class="flex flex-col gap-6">
+
+        <div>
+            <label class="block font-bold mb-2">Tag Name</label>
+            <input type="text" pInputText [(ngModel)]="instance.tag" placeholder="Enter your tag" required autofocus />
+          </div>
+        <div>
+          <label class="block font-bold mb-2">Branch Name</label>
+          <input type="text" pInputText [(ngModel)]="instance.branchName" placeholder="Enter your branchName" required autofocus />
+        </div>
+  
+        <div>
+          <label class="block font-bold mb-2">Date Installation</label>
+          <input type="date" pInputText [(ngModel)]="instance.dateInstallation" required />
+        </div>
+  
+        <div>
+          <label class="block font-bold mb-2">Status</label>
+          <p-select [(ngModel)]="instance.status" [options]="statuses" optionLabel="label" optionValue="value" placeholder="Select Status" />
+        </div>
+  
+        <div>
+            <label class="block font-bold mb-2">Application</label>
+            <p-select [(ngModel)]="instance.application" 
+                      [options]="applications" 
+                      optionLabel="name" 
+                      placeholder="Select application">
+            </p-select>
+          </div>
+          
+          <div>
+            <label class="block font-bold mb-2">Client</label>
+            <p-select [(ngModel)]="instance.client" 
+                      [options]="clients" 
+                      optionLabel="name" 
+                      placeholder="Select client"
+                      required
+                      >
+            </p-select>
+          </div>
+          
+          <div>
+            <label class="block font-bold mb-2">Environment</label>
+            <p-select [(ngModel)]="instance.environment" 
+                      [options]="environments" 
+                      optionLabel="name" 
+                      placeholder="Select environment"
+                      required
+                      >
+                      
+            </p-select>
+          </div>
+          
+      </div>
+    </ng-template>
+  
+    <ng-template #footer>
+      <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+      <p-button label="Save" icon="pi pi-check" (click)="saveInstance()" />
+    </ng-template>
+  </p-dialog>
+  
+  <p-confirmdialog [style]="{ width: '450px' }" />
+  

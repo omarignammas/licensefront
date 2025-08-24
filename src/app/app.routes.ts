@@ -3,6 +3,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { LayoutComponent } from './layout/layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SignupComponent } from './pages/signup/signup.component';
+import { InstancesComponent } from './pages/instances/instances.component';
 
 export const routes: Routes = [
   {
@@ -24,8 +25,14 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: DashboardComponent
+        component: DashboardComponent,
+        
+      },
+      {
+        path: 'instances',
+        component: InstancesComponent
       }
     ]
   }
+
 ];
