@@ -4,6 +4,8 @@ import { LayoutComponent } from './layout/layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { InstancesComponent } from './pages/instances/instances.component';
+import { ApplicationsComponent } from './pages/applications/applications.component';
+import { EnvironmentsComponent } from './pages/environments/environments.component';
 
 export const routes: Routes = [
   {
@@ -31,6 +33,14 @@ export const routes: Routes = [
       {
         path: 'instances',
         component: InstancesComponent
+      },
+      {
+        path: 'applications',
+        component: ApplicationsComponent
+      },
+      {
+        path: 'environments',
+        component: EnvironmentsComponent
       }
     ]
   }

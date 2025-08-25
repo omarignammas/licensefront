@@ -18,6 +18,8 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { IftaLabelModule } from 'primeng/iftalabel';
+import { DatePickerModule } from 'primeng/datepicker';
 import { Application, Client, Environment, Instance, InstanceService } from '../../service/api.service';
 
 interface Column {
@@ -52,6 +54,8 @@ interface ExportColumn {
     InputIconModule,
     IconFieldModule,
     ConfirmDialogModule,
+    IftaLabelModule,
+    DatePickerModule
   ],
   templateUrl: './instances.component.html',
   styleUrls: ['./instances.component.scss'],
@@ -146,8 +150,8 @@ openNew() {
     tag: '',
     branchName: '',
     dateInstallation: '',
-    status: 'INACTIVE',
-    application: { id: 0, name: '', description: '', gitUrl: '' },
+    status: 'ACTIVE',
+    application: { id: 0, name: '', description: '', gitUrl: '', dateCreation: ''},
     client: { id: 0, name: '' },
     environment: { id: 0, name: '', isProduction: false, client: { id: 0, name: '' } }
   };
@@ -168,36 +172,38 @@ saveInstance() {
   this.submitted = true;
 
   if (this.instance.branchName?.trim()) {
-    if (this.instance.tag && this.findIndexById(this.instance.tag) !== -1) {
+    if (this.instance.tag && this.instance.id && this.findIndexById(this.instance.id) !== -1) {
       // Update
       this.instanceService.updateInstance(this.instance.tag, this.instance as Instance).subscribe({
         next: (updated) => {
           const _instances = [...this.instances()];
-          const index = this.findIndexById(this.instance.tag!);
+          const index = this.findIndexById(this.instance.id!);
           _instances[index] = updated;
           this.instances.set(_instances);
           this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Instance Updated', life: 3000 });
           this.instanceDialog = false;
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Update Failed', life: 3000 });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.message || 'Update Failed', life: 3000 });
         }
       });
     } else {
       // Create
-      this.instanceService.createInstance(this.instance as Instance, 1, 1, 1).subscribe({
+      this.instanceService.createInstance(this.instance as Instance, this.instance.client.id, this.instance.application.id, this.instance.environment.id).subscribe({
         next: (created) => {
           this.instances.set([...this.instances(), created]);
           this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Instance Created', life: 3000 });
           this.instanceDialog = false;
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Create Failed', life: 3000 });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.message || 'Create Failed', life: 3000 });
         }
       });
     }
   }
 }
+
+
 
 
 
@@ -278,10 +284,10 @@ async deleteSelectedInstances() {
   
   
 
-  findIndexById(tag: string): number {
+  findIndexById(id: number): number {
     let index = -1;
     for (let i = 0; i < this.instances().length; i++) {
-      if (this.instances()[i].tag === tag) {
+      if (this.instances()[i].id === id) {
         index = i;
         break;
       }

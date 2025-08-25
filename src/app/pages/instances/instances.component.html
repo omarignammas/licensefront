@@ -123,9 +123,19 @@
         </div>
   
         <div>
-          <label class="block font-bold mb-2">Date Installation</label>
-          <input type="date" pInputText [(ngModel)]="instance.dateInstallation" required />
-        </div>
+            <label class="block font-bold mb-2">Date Installation</label>
+            <p-iftalabel>
+              <p-datepicker 
+              [(ngModel)]="instance.dateInstallation" 
+              inputId="date" 
+              showIcon 
+              iconDisplay="input" 
+              appendTo="body"
+              dataType="date"
+            />        
+            <label for="date">Date</label>
+          </p-iftalabel>
+          </div>
   
         <div>
           <label class="block font-bold mb-2">Status</label>
@@ -158,6 +168,7 @@
                       [options]="environments" 
                       optionLabel="name" 
                       placeholder="Select environment"
+                      appendTo="body"
                       required
                       >
                       

@@ -1,0 +1,182 @@
+<p-toast></p-toast>
+
+<p-toolbar styleClass="mb-6">
+  <ng-template #start>
+    <p-button
+      label="New"
+      icon="pi pi-plus"
+      severity="secondary"
+      class="mr-2"
+      (onClick)="openNew()" />
+    <p-button
+      severity="secondary"
+      label="Delete"
+      icon="pi pi-trash"
+      outlined
+      (onClick)="deleteSelectedApplication()"
+      [disabled]="!selectedApplication || !selectedApplication.length" />
+  </ng-template>
+
+  <ng-template #end>
+    <p-button
+      label="Export"
+      icon="pi pi-upload"
+      severity="secondary"
+      (onClick)="exportCSV()" />
+  </ng-template>
+</p-toolbar>
+
+<p-table
+  #dt
+  [value]="applications()"
+  [rows]="10"
+  [columns]="cols"
+  [paginator]="true"
+  [globalFilterFields]="['name','description','gitUrl']"
+  [tableStyle]="{ 'min-width': '60rem' }"
+  [(selection)]="selectedApplication"
+  [rowHover]="true"
+  dataKey="id"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} applications"
+  [showCurrentPageReport]="true"
+  [rowsPerPageOptions]="[10, 20, 30]"
+>
+  <ng-template #caption>
+    <div class="flex items-center justify-between">
+      <h5 class="m-0">Manage Applications</h5>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input
+          pInputText
+          type="text"
+          (input)="onGlobalFilter(dt, $event)"
+          placeholder="Search..." />
+      </p-iconfield>
+    </div>
+  </ng-template>
+
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th pSortableColumn="name" >
+        Name <p-sortIcon field="name" />
+      </th>
+      <th pSortableColumn="description">
+        Description
+      </th>
+      <th pSortableColumn="dateCreation">
+        Date Creation <p-sortIcon field="dateCreation" />
+      </th>
+      <th pSortableColumn="gitUrl">
+        Git URL <p-sortIcon field="gitUrl" />
+      </th>
+      <th>Operations</th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-app>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="app" />
+      </td>
+      <td><p-tag [value]="app.name" [severity]="getSeverity(app.name)" /></td>
+      <td>{{ app.description }}</td>
+      <td>{{ app.dateCreation }}</td>
+      <td>{{ app.gitUrl }}</td>
+      <td>
+        <p-button
+          icon="pi pi-pencil"
+          class="mr-2"
+          [rounded]="true"
+          [outlined]="true"
+          (click)="editInstance(app)" />
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          [rounded]="true"
+          [outlined]="true"
+          (click)="deleteApplication(app)" />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  [(visible)]="instanceDialog"
+  [style]="{ width: '450px' }"
+  header="Application Details"
+  [modal]="true"
+
+>
+
+  <ng-template #content>
+    <div class="flex flex-col gap-6">
+      <div>
+        <label class="block font-bold mb-2">Name</label>
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="application.name"
+          placeholder="Enter application name"
+          required
+          autofocus />
+      </div>
+
+ 
+
+
+    <div>
+        <label class="block font-bold mb-2">Date Creation</label>
+        <p-iftalabel>
+          <p-datepicker 
+          [(ngModel)]="application.dateCreation" 
+          inputId="date" 
+          showIcon 
+          iconDisplay="input" 
+          appendTo="body"
+          dateFormat="yy-mm-dd"
+        />        
+        <label for="date">Date</label>
+      </p-iftalabel>
+      </div>
+
+      <div>
+        <label class="block font-bold mb-2">Description</label>
+        <p-iftalabel>
+          <textarea
+            pTextarea
+            id="description"
+            [(ngModel)]="application.description"
+            rows="4"
+            cols="30"
+            style="resize: none"></textarea>
+          <label for="description">Description</label>
+        </p-iftalabel>
+      </div>
+
+    
+
+      <div>
+        <label class="block font-bold mb-2">Git URL</label>
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="application.gitUrl"
+          placeholder="Enter Github URL"
+          required />
+      </div>
+    </div>
+  </ng-template>
+
+
+
+  <ng-template #footer>
+    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+    <p-button label="Save" icon="pi pi-check" (click)="saveApplication()" />
+  </ng-template>
+</p-dialog>
+
+
+<p-confirmdialog [style]="{ width: '450px' }" />

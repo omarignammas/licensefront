@@ -39,11 +39,7 @@ export class AppSidebar {
                         icon: 'pi pi-fw pi-globe',
                         routerLink: ['/applications']
                     },
-                    {
-                        label: 'Add application',
-                        icon: 'pi pi-fw pi-globe',
-                        routerLink: ['/addApplication']
-                    },
+                   
                     // {
                     //     label: 'Auth',
                     //     icon: 'pi pi-fw pi-user',
@@ -84,26 +80,28 @@ export class AppSidebar {
             },
             {
                 label: 'Environements',
+                routerLink: ['/pages'],
                 items: [
                     {
                         label: 'Environement List',
                         icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            {
-                                label: 'Env1.0.0',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Env 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Env 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Env 1.1.3', icon: 'pi pi-fw pi-bookmark' }
-                                ]
-                            },
-                            {
-                                label: 'Env1.1.0',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [{ label: 'Env 1.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                            }
-                        ]
+                        routerLink: ['/environments']
+                        // items: [
+                        //     {
+                        //         label: 'Env1.0.0',
+                        //         icon: 'pi pi-fw pi-bookmark',
+                        //         items: [
+                        //             { label: 'Env 1.1.1', icon: 'pi pi-fw pi-bookmark' },
+                        //             { label: 'Env 1.1.2', icon: 'pi pi-fw pi-bookmark' },
+                        //             { label: 'Env 1.1.3', icon: 'pi pi-fw pi-bookmark' }
+                        //         ]
+                        //     },
+                        //     {
+                        //         label: 'Env1.1.0',
+                        //         icon: 'pi pi-fw pi-bookmark',
+                        //         items: [{ label: 'Env 1.2.1', icon: 'pi pi-fw pi-bookmark' }]
+                        //     }
+                        // ]
                     },
                     // {
                     //     label: 'Submenu 2',

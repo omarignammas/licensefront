@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 
+
 export interface SigninRequest {
   email: string;
   password: string;
@@ -30,6 +31,7 @@ export interface Application {
   name: string;
   description: string;
   gitUrl: string;
+  dateCreation: string;
 }
 
 export interface Client {
@@ -44,6 +46,10 @@ export interface Environment {
   client: Client;
 }
 
+
+
+
+// Instance service
 @Injectable({
   providedIn: 'root'
 })
@@ -67,7 +73,6 @@ export class InstanceService {
   getAllEnvironments(): Observable<Environment[]> {
     return this.http.get<Environment[]>(`${this.apiUrl}/environments/getAll`);
   }
-
   
 
   createInstance(instance: Instance, clientId: number, applicationId: number, environmentId: number): Observable<Instance> {
@@ -89,6 +94,76 @@ export class InstanceService {
 
 
 
+
+
+// Application service
+@Injectable({
+  providedIn: 'root'
+})
+export class ApplicationService {
+  private apiUrl = 'http://localhost:8080/apiv1';
+
+  constructor(private http: HttpClient) {}
+
+
+
+  getAllApplications(): Observable<Application[]> {
+    return this.http.get<Application[]>(`${this.apiUrl}/applications/getAll`);
+  }
+  
+  createApplication(application: Application): Observable<Application> {
+    return this.http.post<Application>(`${this.apiUrl}/applications/save`, application);
+  }
+  
+  updateApplication(id: number, application: Application): Observable<any> {
+    return this.http.put(`${this.apiUrl}/applications/update/${id}`, application);
+  }
+  
+  deleteApplication(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/applications/delete/${id}`);
+  }
+
+  
+
+}
+
+
+
+// Environment service
+@Injectable({
+  providedIn: 'root'
+})
+export class EnvironmentService {
+  private apiUrl = 'http://localhost:8080/apiv1';
+
+  constructor(private http: HttpClient) {}
+
+
+  getAllEnvironments(): Observable<Environment[]> {
+    return this.http.get<Environment[]>(`${this.apiUrl}/environments/getAll`);
+  }
+  
+  createEnvironment(environment: Environment): Observable<Environment> {
+    return this.http.post<Environment>(`${this.apiUrl}/environments/save`, environment);
+  }
+  
+  updateEnvironment(id: number, environment: Environment): Observable<any> {
+    return this.http.put(`${this.apiUrl}/environments/update/${id}`, environment);
+  }
+  
+  deleteEnvironment(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/environmentS/delete/${id}`);
+  }
+
+  
+
+}
+
+
+
+
+
+// Auth service
 @Injectable({
   providedIn: 'root'
 })
@@ -110,23 +185,19 @@ export class AuthService {
  
 
 
-  private currentUserSubject = new BehaviorSubject<JwtResponse | null>(null);
-  public currentUser$: Observable<JwtResponse | null> = this.currentUserSubject.asObservable();
+  private currentUserSubject = new BehaviorSubject<any | null>(
+    JSON.parse(localStorage.getItem('currentUser') || 'null')
+  );
 
-
-  setCurrentUser(user: JwtResponse) {
+  public currentUser$ = this.currentUserSubject.asObservable();
+  
+  setCurrentUser(user: any) {
+    localStorage.setItem('currentUser', JSON.stringify(user)); // store in localStorage
     this.currentUserSubject.next(user);
   }
-
-  getCurrentUser(): Observable<JwtResponse | null> {
+  
+  getCurrentUser(): Observable<any | null> {
     return this.currentUser$;
   }
-
 }
 
-
-// postData(path: String, formData: FormData): Observable<any> {
-  //   return this.http.post('http://localhost:8888/api/' + path, formData, {
-  //       responseType: 'text'
-  //   });
-  // }

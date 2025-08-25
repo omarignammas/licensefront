@@ -41,6 +41,7 @@ export class DropmenuComponent implements OnInit {
   }
 
   logout() {
+    localStorage.removeItem("currentUser");
     localStorage.removeItem("token");
     sessionStorage.clear();
     window.location.href = "/login";
