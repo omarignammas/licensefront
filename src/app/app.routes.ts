@@ -6,6 +6,7 @@ import { SignupComponent } from './pages/signup/signup.component';
 import { InstancesComponent } from './pages/instances/instances.component';
 import { ApplicationsComponent } from './pages/applications/applications.component';
 import { EnvironmentsComponent } from './pages/environments/environments.component';
+import { ClientsComponent } from './pages/clients/clients.component';
 
 export const routes: Routes = [
   {
@@ -41,6 +42,10 @@ export const routes: Routes = [
       {
         path: 'environments',
         component: EnvironmentsComponent
+      },
+      {
+        path: 'clients',
+        component: ClientsComponent
       }
     ]
   }

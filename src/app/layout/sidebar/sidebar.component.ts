@@ -125,6 +125,19 @@ export class AppSidebar {
                 ]
             },
             {
+                label: 'Clients',
+                icon: 'pi pi-fw pi-briefcase',
+                routerLink: ['/pages'],
+                items: [
+                    {
+                        label: 'Clients List',
+                        icon: 'pi pi-fw pi-globe',
+                        routerLink: ['/clients']
+                    },
+                ]
+            },
+                    
+            {
                 label: 'Get Started',
                 items: [
                     {

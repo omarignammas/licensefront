@@ -95,6 +95,40 @@ export class InstanceService {
 
 
 
+// Client service
+@Injectable({
+  providedIn: 'root'
+})
+export class ClientService {
+  private apiUrl = 'http://localhost:8080/apiv1';
+
+  constructor(private http: HttpClient) {}
+
+
+  
+  getAllClients(): Observable<Client[]> {
+    return this.http.get<Client[]>(`${this.apiUrl}/clients/getAll`);
+  }
+  
+
+  createClient(client: Client): Observable<Client> {
+    return this.http.post<Client>(`${this.apiUrl}/clients/save`, client);
+  }
+
+  updateClient(id: number, client: Client): Observable<Client> {
+    return this.http.put<Client>(`${this.apiUrl}/clients/update/${id}`, client);
+  }
+
+  deleteClient(name: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete/${name}`);
+  }
+
+
+}
+
+
+
+
 
 // Application service
 @Injectable({

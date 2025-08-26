@@ -13,8 +13,8 @@
       label="Delete"
       icon="pi pi-trash"
       outlined
-      (onClick)="deleteSelectedEnvironments()"
-      [disabled]="!selectedEnvironments || !selectedEnvironments.length" />
+      (onClick)="deleteSelectedClients()"
+      [disabled]="!selectedClients || !selectedClients.length" />
   </ng-template>
 
   <ng-template #end>
@@ -28,22 +28,22 @@
 
 <p-table
   #dt
-  [value]="environments()"
+  [value]="clients()"
   [rows]="10"
   [columns]="cols"
   [paginator]="true"
-  [globalFilterFields]="['name','client.name','isProduction']"
-  [tableStyle]="{ 'min-width': '60rem' }"
-  [(selection)]="selectedEnvironments"
+  [globalFilterFields]="['id','name']"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  [(selection)]="selectedClients"
   [rowHover]="true"
   dataKey="id"
-  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} environments"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} clients"
   [showCurrentPageReport]="true"
   [rowsPerPageOptions]="[10, 20, 30]"
 >
   <ng-template #caption>
     <div class="flex items-center justify-between">
-      <h5 class="m-0">Manage Environments</h5>
+      <h5 class="m-0">Manage Clients</h5>
       <p-iconfield>
         <p-inputicon styleClass="pi pi-search" />
         <input
@@ -60,49 +60,39 @@
       <th style="width: 3rem">
         <p-tableHeaderCheckbox />
       </th>
+      <th pSortableColumn="id">
+        ID <p-sortIcon field="id" />
+      </th>
       <th pSortableColumn="name">
         Name <p-sortIcon field="name" />
-      </th>
-      <th pSortableColumn="isProduction">
-        Production? <p-sortIcon field="isProduction" />
-      </th>
-      <th pSortableColumn="client.name">
-        Client <p-sortIcon field="client.name" />
       </th>
       <th>Operations</th>
     </tr>
   </ng-template>
 
-  <ng-template #body let-env>
+  <ng-template #body let-client>
     <tr>
       <td>
-        <p-tableCheckbox [value]="env" />
+        <p-tableCheckbox [value]="client" />
       </td>
-      <td><p-tag [value]="env.name"
-        [severity]="env.name ? 'warn' : 'danger'" /></td>
-      <td>
-        <p-tag [value]="env.isProduction ? 'PROD' : 'NON-PROD'"
-               [severity]="env.isProduction ? 'success' : 'danger'" />
-      </td>
-      <td>
-        
-        <p-tag [value]="env.client?.name "
-        [severity]="env.client?.name  ? 'info' : 'danger'" />
-
-      </td>
+      <td><p-tag [value]="client.id"
+        [severity]="client.id ? 'info' : 'danger'" /></td>
+      <td> <p-tag [value]="client.name"
+        [severity]="client.name ? 'success' : 'danger'" />
+    </td>
       <td>
         <p-button
           icon="pi pi-pencil"
           class="mr-2"
           [rounded]="true"
           [outlined]="true"
-          (click)="editEnvironment(env)" />
+          (click)="editClient(client)" />
         <p-button
           icon="pi pi-trash"
           severity="danger"
           [rounded]="true"
           [outlined]="true"
-          (click)="deleteEnvironment(env)" />
+          (click)="deleteClient(client)" />
       </td>
     </tr>
   </ng-template>
@@ -111,48 +101,31 @@
 <p-dialog
   [(visible)]="dialogOpen"
   [style]="{ width: '480px' }"
-  header="Environment Details"
+  header="Client Details"
   [modal]="true"
 >
   <ng-template #content>
     <div class="flex flex-col gap-6">
       <div>
-        <label class="block font-bold mb-2">Name</label>
+        <label class="block font-bold mb-2">Client Name</label>
         <input
           type="text"
           pInputText
-          [(ngModel)]="environment.name"
-          placeholder="Enter environment name"
+          [(ngModel)]="client.name"
+          placeholder="Enter client name"
           required
-          autofocus />
-      </div>
-
-      <div class="flex items-center gap-3">
-        <label class="font-bold">Is Production :</label>
-        <span class="text-red-400 font-semibold">Off</span>
-        <p-inputSwitch [(ngModel)]="environment.isProduction"></p-inputSwitch>
-        <span class="text-green-400 font-semibold">On</span>
-        
-      </div>
-
-      <div>
-        <label class="block font-bold mb-2">Client</label>
-        <p-select
-        [options]="clients"
-        optionLabel="name"
-        [(ngModel)]="selectedClient"
-        placeholder="Select a client"
-        appendTo="body">
-        </p-select>
-
+          autofocus 
+          
+          />
       </div>
     </div>
   </ng-template>
 
   <ng-template #footer>
     <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-    <p-button label="Save" icon="pi pi-check" (click)="saveEnvironment()" />
+    <p-button label="Save" icon="pi pi-check" (click)="saveClient()" />
   </ng-template>
 </p-dialog>
 
 <p-confirmdialog [style]="{ width: '450px' }" />
+
