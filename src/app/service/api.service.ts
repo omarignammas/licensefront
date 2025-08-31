@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 
 
 export interface SigninRequest {
@@ -13,6 +13,24 @@ export interface JwtResponse {
   email: string;
   fullname: string;
 }
+
+export interface GenericResponse<T> {
+  message: string;
+  data: T;
+}
+
+
+export interface PagingResult<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  page: number;
+  empty: boolean;
+}
+
+
+
 
 
 export interface Instance {
@@ -47,6 +65,111 @@ export interface Environment {
 }
 
 
+// user.service
+export interface User {
+  id?: number;
+  username: string;
+  fullName: string;
+  email: string;
+  password?: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+
+  private baseUrl = 'http://localhost:8080/api/v1/users';
+
+  constructor(private http: HttpClient) { }
+
+  // Get all users
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/getAll`);
+  }
+
+  // Get user by ID
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/userid/${id}`);
+  }
+
+  // Get user by username
+  getUserByUsername(username: string): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/username/${username}`);
+  }
+
+  // Create new user
+  createUser(user: User): Observable<User> {
+    return this.http.post<User>(`${this.baseUrl}/save`, user);
+  }
+
+  // Update existing user
+  updateUser(id: number, user: User): Observable<User> {
+    return this.http.put<User>(`${this.baseUrl}/update/${id}`, user);
+  }
+
+  // Delete user by ID
+  deleteUserById(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/delete/${id}`);
+  }
+
+  // Delete user by username
+  deleteUserByUsername(username: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/delete/${username}`);
+  }
+}
+
+
+// license.service.ts
+
+export interface License {
+  id?: number;
+  key?: string;
+  startDate?: string;   // LocalDate arrives as string in JSON
+  endDate?: string;
+  status?: 'ACTIVE' | 'INACTIVE'; // if you added it in backend DTO
+  user?: User;
+  instance?: Instance;
+}
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LicenseService {
+  private apiUrl = 'http://localhost:8080/api/v1/licences';
+
+  constructor(private http: HttpClient) {}
+
+  getAllLicenses(): Observable<License[]> {
+    return this.http.get<License[]>(`${this.apiUrl}/getAll`);
+  }
+
+  getLicenseById(id: number): Observable<License> {
+    return this.http.get<License>(`${this.apiUrl}/${id}`);
+  }
+
+  createLicense(license: License ,userId:number , instanceId :number ): Observable<License> {
+    return this.http.post<License>(`${this.apiUrl}/save?userId=${userId}&instanceId=${instanceId}`, license);
+  }
+
+  updateLicense(id: number, license: License): Observable<License> {
+    return this.http.put<License>(`${this.apiUrl}/update/${id}`, license);
+  }
+
+  deleteLicense(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
+  }
+
+  getLicensesByUsername(username: string): Observable<License[]> {
+    return this.http.get<License[]>(`${this.apiUrl}/user/${username}`);
+  }
+
+  getLicensesByInstanceTag(tag: string): Observable<License[]> {
+    return this.http.get<License[]>(`${this.apiUrl}/instance/${tag}`);
+  }
+}
+
 
 
 // Instance service
@@ -54,7 +177,7 @@ export interface Environment {
   providedIn: 'root'
 })
 export class InstanceService {
-  private apiUrl = 'http://localhost:8080/apiv1';
+  private apiUrl = 'http://localhost:8080/api/v1';
 
   constructor(private http: HttpClient) {}
 
@@ -84,15 +207,49 @@ export class InstanceService {
   }
 
   deleteInstance(tag: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/delete/${tag}`);
+    return this.http.delete<void>(`${this.apiUrl}/instances/delete/${tag}`);
   }
 
   toggleActivation(tag: string): Observable<string> {
     return this.http.put(`${this.apiUrl}/instances/activation/${tag}`, {}, { responseType: 'text' });
   }
+
+  getByFilters(tag: string, client: string, app: string, env: string): Observable<Instance[]> {
+    return this.http.get<Instance[]>(`${this.apiUrl}/instances/filter`, {
+      params: { tag, clientName: client, appName: app, envName: env }
+    });
+  }
+
+  getInstances(
+    page: number,
+    size: number,
+    sortField: string,
+    direction: string,
+    clientId?: number,
+    applicationId?: number,
+    environmentId?: number
+  ): Observable<PagingResult<Instance>> {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sortField', sortField)
+      .set('direction', direction);
+  
+    if (clientId) params = params.set('clientId', clientId);
+    if (applicationId) params = params.set('applicationId', applicationId);
+    if (environmentId) params = params.set('environmentId', environmentId);
+  
+    // debugging pagination dataFetching
+    //console.log("Page envoyée au backend:", page, size, sortField, direction);
+  
+    return this.http
+      .get<GenericResponse<PagingResult<Instance>>>('/api/v1/instances/getAllInstances', { params })
+      .pipe(map(res => res.data)); // Angular ghatjib data JSON
+      
+  }
+  
+
 }
-
-
 
 
 // Client service
@@ -100,7 +257,7 @@ export class InstanceService {
   providedIn: 'root'
 })
 export class ClientService {
-  private apiUrl = 'http://localhost:8080/apiv1';
+  private apiUrl = 'http://localhost:8080/api/v1';
 
   constructor(private http: HttpClient) {}
 
@@ -135,7 +292,7 @@ export class ClientService {
   providedIn: 'root'
 })
 export class ApplicationService {
-  private apiUrl = 'http://localhost:8080/apiv1';
+  private apiUrl = 'http://localhost:8080/api/v1';
 
   constructor(private http: HttpClient) {}
 
@@ -168,7 +325,7 @@ export class ApplicationService {
   providedIn: 'root'
 })
 export class EnvironmentService {
-  private apiUrl = 'http://localhost:8080/apiv1';
+  private apiUrl = 'http://localhost:8080/api/v1';
 
   constructor(private http: HttpClient) {}
 
@@ -202,7 +359,7 @@ export class EnvironmentService {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth'; 
+  private apiUrl = 'http://localhost:8080/api/v1/auth'; 
 
 
 

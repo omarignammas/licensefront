@@ -105,15 +105,14 @@
 
 <p-dialog
   [(visible)]="instanceDialog"
-  [style]="{ width: '450px' }"
+  [style]="{ width: '550px' }"
   header="Application Details"
   [modal]="true"
-
 >
-
   <ng-template #content>
-    <div class="flex flex-col gap-6">
-      <div>
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Name -->
+      <div class="flex flex-col">
         <label class="block font-bold mb-2">Name</label>
         <input
           type="text"
@@ -121,56 +120,57 @@
           [(ngModel)]="application.name"
           placeholder="Enter application name"
           required
-          autofocus />
+          autofocus
+          class="w-full"
+        />
       </div>
 
- 
+      <!-- Date Creation -->
 
+        <div class="flex flex-col">
+            <label class="block font-bold mb-2">Date Creation</label>
+            <p-datepicker
+            [(ngModel)]="application.dateCreation"
+            inputId="date"
+            showIcon
+            iconDisplay="input"
+            appendTo="body"
+            dateFormat="yy-mm-dd"
+            styleClass="w-full"
+            ></p-datepicker>
+        </div>
+  
 
-    <div>
-        <label class="block font-bold mb-2">Date Creation</label>
-        <p-iftalabel>
-          <p-datepicker 
-          [(ngModel)]="application.dateCreation" 
-          inputId="date" 
-          showIcon 
-          iconDisplay="input" 
-          appendTo="body"
-          dateFormat="yy-mm-dd"
-        />        
-        <label for="date">Date</label>
-      </p-iftalabel>
-      </div>
-
-      <div>
-        <label class="block font-bold mb-2">Description</label>
-        <p-iftalabel>
-          <textarea
-            pTextarea
-            id="description"
-            [(ngModel)]="application.description"
-            rows="4"
-            cols="30"
-            style="resize: none"></textarea>
-          <label for="description">Description</label>
-        </p-iftalabel>
-      </div>
-
-    
-
-      <div>
+      
+      <!-- Git URL -->
+      <div class="flex flex-col col-span-2">
         <label class="block font-bold mb-2">Git URL</label>
         <input
           type="text"
           pInputText
           [(ngModel)]="application.gitUrl"
           placeholder="Enter Github URL"
-          required />
+          required
+          class="w-full"
+        />
       </div>
+
+
+      <!-- Description (take full row) -->
+      <div class="flex flex-col col-span-2">
+        <label class="block font-bold mb-2">Description</label>
+        <textarea
+          pTextarea
+          id="description"
+          [(ngModel)]="application.description"
+          rows="4"
+          class="w-full resize-none"
+          placeholder="Enter description"
+        ></textarea>
+      </div>
+
     </div>
   </ng-template>
-
-
 
   <ng-template #footer>
     <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />

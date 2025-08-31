@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, ViewChild } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { Table, TableModule } from 'primeng/table';
+import { ConfirmationService, LazyLoadEvent, MessageService } from 'primeng/api';
+import { Table, TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -21,6 +21,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { DatePickerModule } from 'primeng/datepicker';
 import { Application, Client, Environment, Instance, InstanceService } from '../../service/api.service';
+import { DropdownModule } from 'primeng/dropdown';
+
 
 interface Column {
   field: string;
@@ -46,7 +48,7 @@ interface ExportColumn {
     RatingModule,
     InputTextModule,
     TextareaModule,
-    SelectModule,
+    DropdownModule,
     RadioButtonModule,
     InputNumberModule,
     DialogModule,
@@ -55,7 +57,8 @@ interface ExportColumn {
     IconFieldModule,
     ConfirmDialogModule,
     IftaLabelModule,
-    DatePickerModule
+    DatePickerModule,
+    SelectModule
   ],
   templateUrl: './instances.component.html',
   styleUrls: ['./instances.component.scss'],
@@ -96,17 +99,70 @@ export class InstancesComponent implements OnInit {
     this.dt.exportCSV();
   }
 
+
+  totalRecords: number = 0;
+  loading: boolean = false;
+
+  // Filters
+  selectedClientId?: number;
+  selectedApplicationId?: number;
+  selectedEnvironmentId?: number;
+
+
+ 
+
+  loadInstancesLazy(event: TableLazyLoadEvent) {
+
+    this.loading = true;
   
+    const first = event.first ?? 1;
+    const rows = event.rows ?? 10;  // default if null
+    const page = Math.floor(first / rows) + 1;
+    const size = rows;
+  
+    let sortField: string;
+
+    if (Array.isArray(event.sortField)) {
+      sortField = event.sortField[0] || 'id'; // take the first sort field or default
+    } else {
+      sortField = event.sortField || 'id';    // default if undefined
+    }
+  
+    const direction = event.sortOrder === 1 ? 'ASC' : 'DESC';
+  
+    this.instanceService.getInstances(
+      page,
+      size,
+      sortField,
+      direction,
+      this.selectedClientId,
+      this.selectedApplicationId,
+      this.selectedEnvironmentId
+    ).subscribe(res => {
+      this.instances.set(res.content);   // signal
+      this.totalRecords = res.totalElements;
+      this.loading = false;
+    });
+  }
+  
+
+
+
+  filteredInstances: Instance[] = [];
+
+
   loadInstances() {
     this.instanceService.getAllInstances().subscribe((data) => {
       this.instances.set(data);
+      this.filteredInstances = [...data]; // default = all instances
     });
-
+  
+    // statuses & cols
     this.statuses = [
       { label: 'ACTIVE', value: 'ACTIVE' },
       { label: 'INACTIVE', value: 'INACTIVE' },
     ];
-
+  
     this.cols = [
       { field: 'tag', header: 'Tag' },
       { field: 'branchName', header: 'Branch Name' },
@@ -116,6 +172,7 @@ export class InstancesComponent implements OnInit {
       { field: 'environment.name', header: 'Environment' },
       { field: 'status', header: 'Status' },
     ];
+  
 
     this.exportColumns = this.cols.map((col) => ({
       title: col.header,
@@ -126,12 +183,25 @@ export class InstancesComponent implements OnInit {
   onGlobalFilter(table: Table, event: Event) {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
-  
 
-  
-  applications: Application[] = [];
+
+ 
+
   clients: Client[] = [];
+  applications: Application[] = [];
   environments: Environment[] = [];
+
+
+
+  filterInstances() {
+    this.loadInstancesLazy({first: 0, rows: 10});
+    this.filteredInstances = this.instances().filter(instance => {
+      return (!this.selectedClientId || instance.client?.id === this.selectedClientId) &&
+             (!this.selectedApplicationId || instance.application?.id === this.selectedApplicationId) &&
+             (!this.selectedEnvironmentId || instance.environment?.id === this.selectedEnvironmentId);
+    });
+  }
+  
 
 ngOnInit() {
   this.loadInstances();
@@ -144,8 +214,84 @@ loadDropdowns() {
   this.instanceService.getAllEnvironments().subscribe(envs => this.environments = envs);
 }
 
+filters: any = {
+  tag: '',
+  client: '',
+  app: '',
+  env: '',
+  status: ''
+};
+
+// Client filter
+onClientFilter(event: any) {
+  this.filters.client = event.value || '';
+  this.applyFilters();
+}
+
+// Application filter
+onApplicationFilter(event: any) {
+  this.filters.app = event.value || '';
+  this.applyFilters();
+}
+
+// Environment filter
+onEnvironmentFilter(event: any) {
+  this.filters.env = event.value || '';
+  this.applyFilters();
+}
+
+
+// Send request to backend
+applyFilters() {
+  if (this.filters.tag || this.filters.client || this.filters.app || this.filters.env) {
+    this.instanceService.getByFilters(
+      this.filters.tag,
+      this.filters.client,
+      this.filters.app,
+      this.filters.env
+    ).subscribe((data) => {
+      this.instances.set(data);  // signal
+    });
+  } else {
+    this.loadInstances(); // default load
+  }
+}
+
+
 // openNew with defaults
 openNew() {
+  // Vérifier si les listes sont vides
+  if (!this.applications.length) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'No Application',
+      detail: 'Please create an application first',
+      life: 4000,
+    });
+    return;
+  }
+
+  if (!this.clients.length) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'No Client',
+      detail: 'Please create a client first',
+      life: 4000,
+    });
+    return;
+  }
+
+  if (!this.environments.length) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'No Environment',
+      detail: 'Please create an environment first',
+      life: 4000,
+    });
+    return;
+  }
+
+  // sinon on ouvre le dialog
   this.instance = {
     tag: '',
     branchName: '',
@@ -159,10 +305,12 @@ openNew() {
   this.instanceDialog = true;
 }
 
+
   
 // Open dialog with existing values
 editInstance(instance: Instance) {
   this.instance = { ...instance };   // clone bach ma ymodifich direct f table
+  this.loadInstances();
   this.submitted = false;
   this.instanceDialog = true;
 }
@@ -180,7 +328,9 @@ saveInstance() {
           const index = this.findIndexById(this.instance.id!);
           _instances[index] = updated;
           this.instances.set(_instances);
+          this.loadInstances();
           this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Instance Updated', life: 3000 });
+          
           this.instanceDialog = false;
         },
         error: (err) => {
@@ -243,6 +393,7 @@ async deleteSelectedInstances() {
     }
   });
 }
+
 
 
 

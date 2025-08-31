@@ -110,42 +110,51 @@
 
 <p-dialog
   [(visible)]="dialogOpen"
-  [style]="{ width: '480px' }"
-  header="Environment Details"
   [modal]="true"
+  [style]="{'width':'100%', 'max-width':'480px'}"
+  header="Environment Details"
 >
   <ng-template #content>
     <div class="flex flex-col gap-6">
-      <div>
-        <label class="block font-bold mb-2">Name</label>
-        <input
-          type="text"
-          pInputText
-          [(ngModel)]="environment.name"
-          placeholder="Enter environment name"
-          required
-          autofocus />
+
+      <!-- Row 1: Name & Client -->
+      <div class="flex flex-col md:flex-row gap-5 w-full">
+        <!-- Name -->
+        <div class="flex-1 min-w-0 flex flex-col">
+          <label class="block font-bold mb-2">Name</label>
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="environment.name"
+            placeholder="Enter environment name"
+            required
+            autofocus
+            class="w-full min-w-0"
+          />
+        </div>
+
+        <!-- Client -->
+        <div class="flex-1 min-w-0 flex flex-col">
+          <label class="block font-bold mb-2">Client</label>
+          <p-select
+            [options]="clients"
+            optionLabel="name"
+            [(ngModel)]="selectedClient"
+            placeholder="Select a client"
+            class="w-full min-w-0"
+          >
+          </p-select>
+        </div>
       </div>
 
+      <!-- Row 2: Is Production -->
       <div class="flex items-center gap-3">
         <label class="font-bold">Is Production :</label>
         <span class="text-red-400 font-semibold">Off</span>
         <p-inputSwitch [(ngModel)]="environment.isProduction"></p-inputSwitch>
         <span class="text-green-400 font-semibold">On</span>
-        
       </div>
 
-      <div>
-        <label class="block font-bold mb-2">Client</label>
-        <p-select
-        [options]="clients"
-        optionLabel="name"
-        [(ngModel)]="selectedClient"
-        placeholder="Select a client"
-        appendTo="body">
-        </p-select>
-
-      </div>
     </div>
   </ng-template>
 

@@ -1,0 +1,167 @@
+<p-toast></p-toast>
+
+<p-toolbar styleClass="mb-6">
+  <ng-template #start>
+    <p-button
+      label="New"
+      icon="pi pi-plus"
+      severity="secondary"
+      class="mr-2"
+      (onClick)="openNew()" />
+    <p-button
+      severity="secondary"
+      label="Delete"
+      icon="pi pi-trash"
+      outlined
+      (onClick)="deleteSelectedLicenses()"
+      [disabled]="!selectedLicenses || !selectedLicenses.length" />
+  </ng-template>
+
+  <ng-template #end>
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-search" />
+      <input
+        pInputText
+        type="text"
+        (input)="onGlobalFilter(dt, $event)"
+        placeholder="Search..." />
+    </p-iconfield>
+  </ng-template>
+</p-toolbar>
+
+<!-- Table -->
+<p-table
+  #dt
+  [value]="licenses()"
+  [rows]="10"
+  [paginator]="true"
+  [rowsPerPageOptions]="[10,20,30]"
+  [(selection)]="selectedLicenses"
+  dataKey="id"
+>
+  <ng-template #caption>
+    <h5 class="m-0">Manage Licenses</h5>
+  </ng-template>
+
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th>Key</th>
+      <th>User</th>
+      <th>Instance</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Operations</th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-license>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="license" />
+      </td>
+      <td>    
+        <p-tag [value]="license.key" [severity]="getSeverity(license.key)" />
+      </td>
+      <td>
+        
+        <p-tag 
+        [value]="license.user?.fullName" 
+        [severity]="license.user?.fullName ? 'warn' : 'success'">
+        </p-tag>
+    
+      </td>
+      
+      <td>{{ license.startDate }}</td>
+      <td>{{ license.endDate }}</td>
+      <td>
+     
+        <p-tag 
+        [value]="license.instance?.tag" 
+        [severity]="license.instance?.tag ? 'success' : 'danger'">
+        </p-tag>
+    
+      </td>
+      <td>
+        <p-button
+          icon="pi pi-pencil"
+          class="mr-2"
+          [rounded]="true"
+          [outlined]="true"
+          (click)="editLicense(license)" />
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          [rounded]="true"
+          [outlined]="true"
+          (click)="deleteLicense(license)" />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Dialog -->
+<p-dialog [(visible)]="licenseDialog" [style]="{ width: '600px' }" header="License Details" [modal]="true">
+  <ng-template #content>
+    <div class="grid grid-cols-2 gap-6">
+      <!-- Key -->
+      <div class="flex items-center gap-3">
+        <label class="w-32 font-bold">Key</label>
+        <input type="text" pInputText [(ngModel)]="license.key" placeholder="Enter license key" class="flex-1" />
+      </div>
+
+       <!-- User -->
+       <div class="flex items-center gap-3">
+        <label class="w-32 font-bold">User</label>
+        <p-dropdown [(ngModel)]="license.user" [options]="users"
+        optionLabel="fullName"  placeholder="Select a User"></p-dropdown>
+        </div>
+
+
+      <!-- Start Date -->
+      <div class="flex items-center gap-3">
+        <label class="w-32 font-bold">Start Date</label>
+        <p-datepicker 
+        [(ngModel)]="license.startDate" 
+        inputId="date"
+        showIcon
+        iconDisplay="input"
+        appendTo="body"
+        dataType="date"
+        class="flex-1"
+      />
+      </div>
+
+      <!-- End Date -->
+      <div class="flex items-center gap-3">
+        <label class="w-32 font-bold">End Date</label>
+        <p-datepicker 
+        [(ngModel)]="license.endDate" 
+        inputId="date"
+        showIcon
+        iconDisplay="input"
+        appendTo="body"
+        dataType="date"
+        class="flex-1"
+      />
+      </div>
+
+     
+      <!-- Instance -->
+      <div class="flex items-center gap-3">
+        <label class="w-32 font-bold">Instance</label>
+        <p-dropdown [(ngModel)]="license.instance" [options]="instances"
+        optionLabel="tag" appendTo="body" placeholder="Select an Instance"></p-dropdown>
+          </div>
+    </div>
+  </ng-template>
+
+  <ng-template #footer>
+    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+    <p-button label="Save" icon="pi pi-check" (click)="saveLicense()" />
+  </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />

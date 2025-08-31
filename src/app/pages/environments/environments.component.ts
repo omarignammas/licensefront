@@ -102,6 +102,17 @@ export class EnvironmentsComponent implements OnInit {
   }
 
   openNew() {
+
+    if (!this.clients.length) {
+      this.toast.add({
+        severity: 'warn',
+        summary: 'No Client',
+        detail: 'Please create a client first',
+        life: 4000,
+      });
+      return;
+    }
+
     this.environment = { name: '', isProduction: false };
     this.selectedClientId = null;
     this.dialogOpen = true;

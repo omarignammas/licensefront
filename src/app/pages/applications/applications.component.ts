@@ -173,17 +173,17 @@ export class ApplicationsComponent implements OnInit {
 
         // Update
         this.applicationService.updateApplication(this.application.id, this.application as Application).subscribe({
-          next: () => {
+          next: (success) => {
             const _applications = [...this.applications()];
             const index = this.findIndexById(this.application.id!);
             _applications[index] = this.application as Application;
             this.applications.set(_applications);
 
-            this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Application Updated', life: 3000 });
+            this.messageService.add({ severity: 'success', summary: 'Successful', detail: success.message || 'Application Updated', life: 3000 });
             this.instanceDialog = false;
           },
-          error: () => {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Update Failed', life: 3000 });
+          error: (err) => {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.message || 'Update Failed', life: 3000 });
           }
         });
       } else {
@@ -195,11 +195,12 @@ export class ApplicationsComponent implements OnInit {
         this.applicationService.createApplication(this.application as Application).subscribe({
           next: (created) => {
             this.applications.set([...this.applications(), created]);
-            this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Application Created', life: 3000 });
+            this.messageService.add({ severity: 'success', summary: 'Successful', detail:'Application Created', life: 3000 });
             this.instanceDialog = false;
           },
-          error: () => {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Create Failed', life: 3000 });
+          error: (err) => {
+            console.log(err.error);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.message || 'Create Failed', life: 3000 });
           }
         });
 

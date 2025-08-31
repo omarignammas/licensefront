@@ -138,20 +138,22 @@ export class AppSidebar {
             },
                     
             {
-                label: 'Get Started',
+                label: 'Licenses',
+                icon: 'pi pi-fw pi-briefcase',
+                routerLink: ['/pages'],
                 items: [
                     {
-                        label: 'Documentation',
+                        label: 'Liceses List',
                         icon: 'pi pi-fw pi-book',
-                        routerLink: ['/documentation']
+                        routerLink: ['/licenses']
                     },
-                    {
-                        label: 'View Source',
-                        icon: 'pi pi-fw pi-github',
-                        url: 'https://github.com/primefaces/sakai-ng',
-                        target: '_blank'
-                    }
-                ]
+            //         {
+            //             label: 'View Source',
+            //             icon: 'pi pi-fw pi-github',
+            //             url: 'https://github.com/primefaces/sakai-ng',
+            //             target: '_blank'
+            //         }
+              ]
             }
         ];
     }
